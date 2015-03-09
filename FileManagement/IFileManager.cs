@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FileManagement
+{
+    /// <summary>
+    /// Provides basic file management for client applications.
+    /// </summary>
+    public interface IFileManager
+    {
+        /// <summary>
+        /// Saves an object to a file.
+        /// </summary>
+        /// <typeparam name="T">The type of object to serialize in the file.</typeparam>
+        /// <param name="obj">The object to save.</param>
+        /// <param name="serializer">An object that will be used to serialize the object into a binary stream.</param>
+        void Save<T>(T obj, ISerializer serializer) where T : IFile;
+
+        /// <summary>
+        /// Saves an object to a file.
+        /// </summary>
+        /// <typeparam name="T">The type of object to serialize in the file.</typeparam>
+        /// <param name="obj">The object to save.</param>
+        /// <param name="serializer">An object that will be used to serialize the object into a binary stream.</param>
+        /// <param name="includeInHistory">Indicates whether the file should be added to the recent document history (if history is enabled).</param>
+        void Save<T>(T obj, ISerializer serializer, bool includeInHistory) where T : IFile;
+
+        /// <summary>
+        /// Loads an object from a file.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize from the file.</typeparam>
+        /// <param name="filePath">The location of the file to load.</param>
+        /// <returns>The deserialized object.</returns>
+        /// <param name="serializer">An object that will be used to deserialize the object from a binary stream.</param>
+        T Load<T>(string filePath, ISerializer serializer) where T : IFile;
+
+        /// <summary>
+        /// Loads an object from a file.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize from the file.</typeparam>
+        /// <param name="filePath">The location of the file to load.</param>
+        /// <returns>The deserialized object.</returns>
+        /// <param name="serializer">An object that will be used to deserialize the object from a binary stream.</param>
+        /// <param name="includeInHistory">Indicates whether the file should be added to the recent document history (if history is enabled).</param>
+        T Load<T>(string filePath, ISerializer serializer, bool includeInHistory) where T : IFile;
+
+		/// <summary>
+		/// Saves the list of recently opened files.
+		/// </summary>
+		/// <param name="recentFileList">The list to save.</param>
+		void SaveRecentFiles(IRecentFileList recentFileList);
+
+		/// <summary>
+		/// Loads the list of recently opened files.
+		/// </summary>
+		/// <param name="recentFileList">The list to save.</param>
+        IRecentFileList GetRecentFiles();
+    }
+}
