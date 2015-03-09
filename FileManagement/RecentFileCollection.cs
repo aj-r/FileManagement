@@ -7,18 +7,15 @@ using System.Xml.Serialization;
 namespace FileManagement
 {
 	/// <summary>
-	/// A queue that is useful for storing and maintaining a list of recent files.
-	/// The queue works in the opposite order of a regular queue: items are added to the
-	/// front and removed from the back.
+	/// A collection that is useful for storing and maintaining a list of recent files.
+	/// The files at the start of the collection are the least recent, and the files at the end are the most recent.
 	/// </summary>
-	[Serializable]
-	public class RecentFileList : IRecentFileList
+	public class RecentFileCollection : IRecentFileCollection
 	{
 		private static int defaultMaxLength = int.MaxValue;
 
 		/// <summary>
-		/// Gets or sets the default maximum length that a RecentFileQueue will have
-		/// when it is created.
+        /// Gets or sets the default maximum length that a RecentFileCollection will have when it is created.
 		/// </summary>
 		public static int DefaultMaxLength
 		{
@@ -109,78 +106,62 @@ namespace FileManagement
 		private int count;
 
 		/// <summary>
-		/// Creates a recent file queue.
+        /// Creates a new RecentFileCollection instance.
 		/// </summary>
-		public RecentFileList()
+		public RecentFileCollection()
 			: this(DefaultMaxLength)
 		{ }
 
-		/// <summary>
-		/// Creates a recent file queue.
+        /// <summary>
+        /// Creates a new RecentFileCollection instance.
 		/// </summary>
 		/// <param name="maxLength">
-		/// The maximum length that the queue can have. If this length is exceeded,
-		/// the queue will automatically dequeue itself until the maximum length is no longer exceeded.
+		/// The maximum length that the collection can have. If this length is exceeded,
+        /// the collection will automatically dequeue itself until the maximum length is no longer exceeded.
 		/// </param>
-		public RecentFileList(int maxLength)
+		public RecentFileCollection(int maxLength)
 		{
 			this.maxLength = maxLength;
 			this.count = 0;
 		}
 
-		/// <summary>
-		/// Creates a copy of a recent file queue.
+        /// <summary>
+        /// Creates a copy of a RecentFileCollection instance.
 		/// </summary>
-		/// <param name="recentFileQueue">The queue to copy.</param>
-		public RecentFileList(RecentFileList recentFileQueue)
-			: this((IEnumerable<string>)recentFileQueue)
+        /// <param name="recentFileCollection">The collection to copy.</param>
+		public RecentFileCollection(RecentFileCollection recentFileCollection)
+            : this((IEnumerable<string>)recentFileCollection)
 		{
-			maxLength = recentFileQueue.maxLength;
+            maxLength = recentFileCollection.maxLength;
 		}
 
 		/// <summary>
-		/// Creates a recent file queue from a list of file paths.
+        /// Creates a new RecentFileCollection instance from a list of file paths.
 		/// </summary>
 		/// <param name="filePaths">A list of file paths.</param>
-		public RecentFileList(IEnumerable<string> filePaths)
+		public RecentFileCollection(IEnumerable<string> filePaths)
 			: this()
 		{
-			RecentFileNode previousNode = null;
 			foreach (string filePath in filePaths)
-			{
-				RecentFileNode newNode = new RecentFileNode(filePath);
-				newNode.previousNode = previousNode;
-				if (previousNode != null)
-				{
-					previousNode.nextNode = newNode;
-				}
-				else
-				{
-					firstNode = newNode;
-				}
-				previousNode = newNode;
-				count++;
-			}
-			lastNode = previousNode;
+                Add(filePath);
 		}
 
 		/// <summary>
 		/// Creates a copy of a recent file queue.
 		/// </summary>
-		public RecentFileList Clone()
+		public RecentFileCollection Clone()
 		{
-			return new RecentFileList(this);
+			return new RecentFileCollection(this);
 		}
 
-		private void RemoveLast()
+		private void RemoveLeastRecent()
 		{
-			string returnValue = lastNode.filePath;
-			RecentFileNode secondLastNode = lastNode.previousNode;
-			if (secondLastNode != null)
+			var secondNode = firstNode.nextNode;
+			if (secondNode != null)
 			{
 				// There are still items left.
-				secondLastNode.nextNode = null;
-				lastNode = secondLastNode;
+				secondNode.previousNode = null;
+				firstNode = secondNode;
 			}
 			else
 			{
@@ -188,17 +169,17 @@ namespace FileManagement
 				firstNode = null;
 				lastNode = null;
 			}
-			count--;
+			--count;
 		}
 
 		private void RemoveExcess()
 		{
 			while (Count > MaxLength)
-				RemoveLast();
+                RemoveLeastRecent();
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum length of the queue.
+		/// Gets or sets the maximum length of the collection.
 		/// </summary>
 		public int MaxLength
 		{
@@ -216,9 +197,9 @@ namespace FileManagement
         #region ICollection<string> Members
 
         /// <summary>
-        /// Adds a file path to the beginning of the queue. If the file path already exists in the queue,
-        /// it is moved to the front of the list. If the maximum length is exceeded, the queue will
-        /// automatically dequeue itself until the maximum length is no longer exceeded.
+        /// Adds a file path to the end of the collection. If the file path already exists in the collection,
+        /// it is moved to the front of the collection. If the maximum length is exceeded, the collection will
+        /// automatically remove the least recent items until the maximum length is no longer exceeded.
         /// </summary>
         /// <param name="filePath">The file path to add.</param>
         public void Add(string filePath)
@@ -227,27 +208,27 @@ namespace FileManagement
             Remove(filePath);
 
             // Add the file path to the list.
-            RecentFileNode secondNode = firstNode;
-            firstNode = new RecentFileNode(filePath);
-            firstNode.nextNode = secondNode;
-            if (secondNode != null)
+            var secondLastNode = lastNode;
+            lastNode = new RecentFileNode(filePath);
+            lastNode.previousNode = secondLastNode;
+            if (secondLastNode != null)
             {
-                // There is a node after this one.
-                secondNode.previousNode = firstNode;
+                // There is a node before this one.
+                secondLastNode.nextNode = lastNode;
             }
             else
             {
                 // There is no node after this one - it is the last node.
-                lastNode = firstNode;
+                firstNode = lastNode;
             }
-            count++;
+            ++count;
 
-            // If the max size is exceeded, drop items off the end of the queue.
+            // If the max size is exceeded, remove the most recent items.
             RemoveExcess();
         }
 
         /// <summary>
-        /// Removes the first occurrence of the specified file path from the queue, if it exists.
+        /// Removes the first occurrence of the specified file path from the collection, if it exists.
         /// </summary>
         /// <param name="filePath">The file path to remove.</param>
         /// <returns>True if the item was removed, false if the file path was not found.</returns>
@@ -278,7 +259,7 @@ namespace FileManagement
                         // This was the last node.
                         lastNode = currentNode.previousNode;
                     }
-                    count--;
+                    --count;
                     return true;
                 }
                 currentNode = currentNode.nextNode;
@@ -308,7 +289,7 @@ namespace FileManagement
         }
 
         /// <summary>
-        /// Gets the number of items in the queue.
+        /// Gets the number of items in the collection.
         /// </summary>
         public int Count
         {

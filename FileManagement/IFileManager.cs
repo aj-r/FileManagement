@@ -17,7 +17,7 @@ namespace FileManagement
         /// <typeparam name="T">The type of object to serialize in the file.</typeparam>
         /// <param name="obj">The object to save.</param>
         /// <param name="serializer">An object that will be used to serialize the object into a binary stream.</param>
-        void Save<T>(T obj, ISerializer serializer) where T : IFile;
+        void Save<T>(T obj) where T : IFile;
 
         /// <summary>
         /// Saves an object to a file.
@@ -26,7 +26,7 @@ namespace FileManagement
         /// <param name="obj">The object to save.</param>
         /// <param name="serializer">An object that will be used to serialize the object into a binary stream.</param>
         /// <param name="includeInHistory">Indicates whether the file should be added to the recent document history (if history is enabled).</param>
-        void Save<T>(T obj, ISerializer serializer, bool includeInHistory) where T : IFile;
+        void Save<T>(T obj, bool includeInHistory) where T : IFile;
 
         /// <summary>
         /// Loads an object from a file.
@@ -35,7 +35,7 @@ namespace FileManagement
         /// <param name="filePath">The location of the file to load.</param>
         /// <returns>The deserialized object.</returns>
         /// <param name="serializer">An object that will be used to deserialize the object from a binary stream.</param>
-        T Load<T>(string filePath, ISerializer serializer) where T : IFile;
+        T Load<T>(string filePath) where T : IFile;
 
         /// <summary>
         /// Loads an object from a file.
@@ -45,18 +45,18 @@ namespace FileManagement
         /// <returns>The deserialized object.</returns>
         /// <param name="serializer">An object that will be used to deserialize the object from a binary stream.</param>
         /// <param name="includeInHistory">Indicates whether the file should be added to the recent document history (if history is enabled).</param>
-        T Load<T>(string filePath, ISerializer serializer, bool includeInHistory) where T : IFile;
+        T Load<T>(string filePath, bool includeInHistory) where T : IFile;
 
 		/// <summary>
 		/// Saves the list of recently opened files.
 		/// </summary>
 		/// <param name="recentFileList">The list to save.</param>
-		void SaveRecentFiles(IRecentFileList recentFileList);
+		void SaveRecentFiles(IRecentFileCollection recentFileList);
 
 		/// <summary>
 		/// Loads the list of recently opened files.
 		/// </summary>
 		/// <param name="recentFileList">The list to save.</param>
-        IRecentFileList GetRecentFiles();
+        IRecentFileCollection GetRecentFiles();
     }
 }

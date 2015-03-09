@@ -7,17 +7,28 @@ using System.Text.RegularExpressions;
 namespace FileManagement
 {
 	public class FileManager : IFileManager
-	{
-        public FileManager(IStorage storage)
+    {
+        public FileManager(ISerializer serializer)
+            : this(serializer, new FileStorage())
+        { }
+
+        public FileManager(ISerializer serializer, IStorage storage)
         {
             Storage = storage;
+            Serializer = serializer;
             IsHistoryEnabled = true;
+            RecentFilesStoragePath = "recent.txt";
         }
 
         /// <summary>
         /// Gets the storage object used to retrieve file streams.
         /// </summary>
         protected IStorage Storage { get; private set; }
+
+        /// <summary>
+        /// Gets the storage object used to serialize and deserialize files.
+        /// </summary>
+        protected ISerializer Serializer { get; private set; }
 
         /// <summary>
         /// Gets or sets whether recent document history is enabled.
@@ -28,31 +39,21 @@ namespace FileManagement
         public bool IsHistoryEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the application settings folder.
+        /// Gets or sets the path to the file that contains the recent file history.
         /// </summary>
-        public string SettingsPath { get; set; }
-
-        /// <summary>
-        /// Gets the path to the file that contains the recent file history.
-        /// </summary>
-        /// <returns></returns>
-		protected virtual string GetRecentFilePath()
-		{
-            return string.IsNullOrEmpty(SettingsPath) ? "recent.txt" : Path.Combine(SettingsPath, "recent.txt");
-		}
+        public string RecentFilesStoragePath { get; set; }
 
 		/// <summary>
 		/// Saves the list of recently opened files.
 		/// </summary>
         /// <param name="recentFileList">The list to save.</param>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error saving the file.</exception>
-        public virtual void SaveRecentFiles(IRecentFileList recentFileList)
+        public virtual void SaveRecentFiles(IRecentFileCollection recentFileList)
         {
             if (!IsHistoryEnabled)
                 return;
-            string recentFilePath = GetRecentFilePath();
 
-            using (var stream = Storage.GetWriteStream(recentFilePath))
+            using (var stream = Storage.GetWriteStream(RecentFilesStoragePath))
             {
                 if (stream == null)
                     return;
@@ -70,25 +71,19 @@ namespace FileManagement
 		/// </summary>
         /// <param name="recentFileList">The list to save.</param>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error reading the file.</exception>
-        public virtual IRecentFileList GetRecentFiles()
+        public virtual IRecentFileCollection GetRecentFiles()
         {
-            string recentFilePath = GetRecentFilePath();
-			if (!Storage.Exists(recentFilePath))
-                return new RecentFileList();
-
-			// Enqueue the files in backwards order - Enqueue adds the item to the front of the queue,
-			// so the last item equeued will be first, so we must add the first item last.
-            var filePaths = new List<string>();
-            using (var stream = Storage.GetReadStream(recentFilePath))
+            var files = new RecentFileCollection();
+            using (var stream = Storage.GetReadStream(RecentFilesStoragePath))
             {
                 if (stream == null)
-                    return new RecentFileList();
+                    return files;
                 using (var reader = new StreamReader(stream))
                     while (!reader.EndOfStream)
-                        filePaths.Add(reader.ReadLine());
+                        files.Add(reader.ReadLine());
             }
 
-			return new RecentFileList(filePaths);
+            return files;
         }
         
         /// <summary>
@@ -97,9 +92,9 @@ namespace FileManagement
         /// <typeparam name="T">The type of object to serialize in the file.</typeparam>
         /// <param name="obj">The object to save.</param>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error saving the file.</exception>
-        public void Save<T>(T obj, ISerializer serializer) where T : IFile
+        public void Save<T>(T obj) where T : IFile
         {
-            Save(obj, serializer, true);
+            Save(obj, true);
         }
 
         /// <summary>
@@ -109,7 +104,7 @@ namespace FileManagement
         /// <param name="obj">The object to save.</param>
         /// <param name="includeInHistory">Indicates whether the saved file should be added to the recent document history (if history is enabled).</param>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error saving the file.</exception>
-        public void Save<T>(T obj, ISerializer serializer, bool includeInHistory) where T : IFile
+        public void Save<T>(T obj, bool includeInHistory) where T : IFile
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
@@ -122,7 +117,7 @@ namespace FileManagement
                 {
                     try
                     {
-                        serializer.Serialize(stream, obj);
+                        Serializer.Serialize(stream, obj);
                     }
                     catch (Exception ex)
                     {
@@ -158,9 +153,9 @@ namespace FileManagement
         /// <param name="filePath">The location of the file to load.</param>
         /// <returns>The deserialized object.</returns>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error reading the file.</exception>
-        public T Load<T>(string filePath, ISerializer serializer) where T : IFile
+        public T Load<T>(string filePath) where T : IFile
         {
-            return Load<T>(filePath, serializer, true);
+            return Load<T>(filePath, true);
         }
 
         /// <summary>
@@ -171,7 +166,7 @@ namespace FileManagement
         /// <param name="includeInHistory">Indicates whether the saved file should be added to the recent document history (if history is enabled).</param>
         /// <returns>The deserialized object.</returns>
         /// <exception cref="FileManagement.FileException">Occurs if there was an error reading the file.</exception>
-        public T Load<T>(string filePath, ISerializer serializer, bool includeInHistory) where T : IFile
+        public T Load<T>(string filePath, bool includeInHistory) where T : IFile
         {
             T obj;
 
@@ -181,7 +176,7 @@ namespace FileManagement
                 {
                     try
                     {
-                        obj = serializer.Deserialize<T>(stream);
+                        obj = Serializer.Deserialize<T>(stream);
                     }
                     catch (Exception ex)
                     {

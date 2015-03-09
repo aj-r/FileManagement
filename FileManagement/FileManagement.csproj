@@ -44,11 +44,11 @@
     <Compile Include="FileManager.cs" />
     <Compile Include="IFile.cs" />
     <Compile Include="IFileManager.cs" />
-    <Compile Include="IRecentFileList.cs" />
+    <Compile Include="IRecentFileCollection.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="IStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecentFileList.cs" />
+    <Compile Include="RecentFileCollection.cs" />
     <Compile Include="FileStorage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

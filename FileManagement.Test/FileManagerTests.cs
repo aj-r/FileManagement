@@ -18,8 +18,8 @@ namespace FileManagement.Test
             mockSerializer.Setup(s => s.Serialize(It.IsAny<MemoryStream>(), It.IsAny<IFile>())).Callback(() => saved = true);
             var mockStorage = new Mock<IStorage>();
             mockStorage.Setup(s => s.GetWriteStream("test.txt")).Callback(() => gotStream = true);
-            var fm = new FileManager(mockStorage.Object) { IsHistoryEnabled = false };
-            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"), mockSerializer.Object);
+            var fm = new FileManager(mockSerializer.Object, mockStorage.Object) { IsHistoryEnabled = false };
+            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"));
 
             Assert.IsTrue(gotStream, "Failed to get stream");
             Assert.IsTrue(saved, "Failed to save");
@@ -34,8 +34,8 @@ namespace FileManagement.Test
             mockSerializer.Setup(s => s.Deserialize<IFile>(It.IsAny<Stream>())).Callback(() => loaded = true);
             var mockStorage = new Mock<IStorage>();
             mockStorage.Setup(s => s.GetReadStream("test.txt")).Callback(() => gotStream = true);
-            var fm = new FileManager(mockStorage.Object) { IsHistoryEnabled = false };
-            fm.Load<IFile>("test.txt", mockSerializer.Object);
+            var fm = new FileManager(mockSerializer.Object, mockStorage.Object) { IsHistoryEnabled = false };
+            fm.Load<IFile>("test.txt");
 
             Assert.IsTrue(gotStream, "Failed to get stream");
             Assert.IsTrue(loaded, "Failed to load");
@@ -46,10 +46,10 @@ namespace FileManagement.Test
         {
             var recentFileStream = new MemoryStream();
             var mockStorage = new Mock<IStorage>();
-            mockStorage.Setup(s => s.GetWriteStream("recent.txt")).Returns(recentFileStream);
-            mockStorage.Setup(s => s.Exists("recent.txt")).Returns(false);
-            var fm = new FileManager(mockStorage.Object);
-            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"), Mock.Of<ISerializer>());
+            mockStorage.Setup(s => s.GetWriteStream("recent-test.txt")).Returns(recentFileStream);
+            var fm = new FileManager(Mock.Of<ISerializer>(), mockStorage.Object);
+            fm.RecentFilesStoragePath = "recent-test.txt";
+            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"));
 
             var recentFiles = Encoding.UTF8.GetString(recentFileStream.GetBuffer());
             StringAssert.Contains("test.txt", recentFiles);
@@ -60,14 +60,13 @@ namespace FileManagement.Test
         {
             var recentFileStream = new MemoryStream();
             var mockStorage = new Mock<IStorage>();
-            mockStorage.Setup(s => s.GetWriteStream("recent.txt")).Returns(recentFileStream);
-            mockStorage.Setup(s => s.Exists("recent.txt")).Returns(false);
-            var fm = new FileManager(mockStorage.Object);
-            fm.Load<IFile>("test.txt", Mock.Of<ISerializer>());
+            mockStorage.Setup(s => s.GetWriteStream("recent-test.txt")).Returns(recentFileStream);
+            var fm = new FileManager(Mock.Of<ISerializer>(), mockStorage.Object);
+            fm.RecentFilesStoragePath = "recent-test.txt";
+            fm.Load<IFile>("test.txt");
 
             var recentFiles = Encoding.UTF8.GetString(recentFileStream.GetBuffer());
             StringAssert.Contains("test.txt", recentFiles);
         }
-
     }
 }
