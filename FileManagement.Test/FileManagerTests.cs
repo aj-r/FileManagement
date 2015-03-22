@@ -19,7 +19,7 @@ namespace FileManagement.Test
             var mockStorage = new Mock<IStorage>();
             mockStorage.Setup(s => s.GetWriteStream("test.txt")).Callback(() => gotStream = true);
             var fm = new FileManager(mockSerializer.Object, mockStorage.Object) { IsHistoryEnabled = false };
-            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"));
+            fm.Save(Mock.Of<IFile>(f => f.StorageLocation == "test.txt"));
 
             Assert.IsTrue(gotStream, "Failed to get stream");
             Assert.IsTrue(saved, "Failed to save");
@@ -49,7 +49,7 @@ namespace FileManagement.Test
             mockStorage.Setup(s => s.GetWriteStream("recent-test.txt")).Returns(recentFileStream);
             var fm = new FileManager(Mock.Of<ISerializer>(), mockStorage.Object);
             fm.RecentFilesStoragePath = "recent-test.txt";
-            fm.Save(Mock.Of<IFile>(f => f.FilePath == "test.txt"));
+            fm.Save(Mock.Of<IFile>(f => f.StorageLocation == "test.txt"));
 
             var recentFiles = Encoding.UTF8.GetString(recentFileStream.GetBuffer());
             StringAssert.Contains("test.txt", recentFiles);
