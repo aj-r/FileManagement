@@ -6,6 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace FileManagement
 {
+    /// <summary>
+    /// Provides basic file management for client applications.
+    /// </summary>
 	public class FileManager : IFileManager
     {
         public FileManager(ISerializer serializer)
@@ -50,20 +53,23 @@ namespace FileManagement
         /// <exception cref="FileManagement.FileException">Occurs if there was an error saving the file.</exception>
         public virtual void SaveRecentFiles(IRecentFileCollection recentFileList)
         {
-            if (!IsHistoryEnabled)
-                return;
-
-            using (var stream = Storage.GetWriteStream(RecentFilesStoragePath))
+            try
             {
-                if (stream == null)
-                    return;
-                using (var writer = new StreamWriter(stream))
+                using (var stream = Storage.GetWriteStream(RecentFilesStoragePath))
                 {
-                    foreach (string filePath in recentFileList)
-                        writer.WriteLine(filePath);
-                    writer.Close();
+                    if (stream == null)
+                        return;
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        foreach (string filePath in recentFileList)
+                            writer.WriteLine(filePath);
+                        writer.Close();
+                    }
                 }
             }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (IOException) { }
         }
 
 		/// <summary>
@@ -74,14 +80,20 @@ namespace FileManagement
         public virtual IRecentFileCollection GetRecentFiles()
         {
             var files = new RecentFileCollection();
-            using (var stream = Storage.GetReadStream(RecentFilesStoragePath))
+            try
             {
-                if (stream == null)
-                    return files;
-                using (var reader = new StreamReader(stream))
-                    while (!reader.EndOfStream)
-                        files.Add(reader.ReadLine());
+                using (var stream = Storage.GetReadStream(RecentFilesStoragePath))
+                {
+                    if (stream == null)
+                        return files;
+                    using (var reader = new StreamReader(stream))
+                        while (!reader.EndOfStream)
+                            files.Add(reader.ReadLine());
+                }
             }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (IOException) { }
 
             return files;
         }
@@ -108,12 +120,12 @@ namespace FileManagement
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
-            if (obj.FilePath == null)
+            if (obj.StorageLocation == null)
                 throw new ArgumentException("You must set the FilePath before saving the object.", "obj");
             
             try
             {
-                using (var stream = Storage.GetWriteStream(obj.FilePath))
+                using (var stream = Storage.GetWriteStream(obj.StorageLocation))
                 {
                     try
                     {
@@ -141,7 +153,7 @@ namespace FileManagement
             if (IsHistoryEnabled)
             {
                 var list = GetRecentFiles();
-                list.Add(obj.FilePath);
+                list.Add(obj.StorageLocation);
                 SaveRecentFiles(list);
             }
         }
@@ -199,7 +211,7 @@ namespace FileManagement
 
             if (obj != null)
             {
-                obj.FilePath = filePath;
+                obj.StorageLocation = filePath;
             }
 
             if (IsHistoryEnabled)

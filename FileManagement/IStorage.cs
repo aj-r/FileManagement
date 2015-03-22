@@ -2,6 +2,9 @@
 
 namespace FileManagement
 {
+    /// <summary>
+    /// Handles reading and writing to a form of persistent storage.
+    /// </summary>
     public interface IStorage
     {
         /// <summary>

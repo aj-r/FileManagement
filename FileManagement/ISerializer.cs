@@ -2,6 +2,9 @@
 
 namespace FileManagement
 {
+    /// <summary>
+    /// Represents an object that can serialize of deserialize objects to a stream.
+    /// </summary>
     public interface ISerializer
     {
         /// <summary>

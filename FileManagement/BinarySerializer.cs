@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FileManagement
 {
+    /// <summary>
+    /// Serializes and deserializes objects as binary data.
+    /// </summary>
     public class BinarySerializer : ISerializer
     {
         private IFormatter serializer;

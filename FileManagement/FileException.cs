@@ -11,6 +11,9 @@ namespace FileManagement
     /// </summary>
     public class FileException : Exception
     {
+        /// <summary>
+        /// Gets the cause of the file exception.
+        /// </summary>
         public FileExceptionType Type { get; private set; }
 
         public FileException(FileExceptionType type)
@@ -26,7 +29,7 @@ namespace FileManagement
         { }
 
         public FileException(string message, FileExceptionType type, Exception innerException)
-            : base("An error occurred while reading or writing to the file.", innerException)
+            : base(message, innerException)
         {
             Type = type;
         }
