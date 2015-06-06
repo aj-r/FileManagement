@@ -2,28 +2,29 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace FileManagement
 {
     /// <summary>
     /// Serializes and deserializes objects in XML format.
     /// </summary>
-    public class XmlSerializer : ISerializer
+    public class XmlFileSerializer : ISerializer
     {
-        private Dictionary<Type, System.Xml.Serialization.XmlSerializer> serializerCache = new Dictionary<Type, System.Xml.Serialization.XmlSerializer>();
+        private Dictionary<Type, XmlSerializer> serializerCache = new Dictionary<Type, XmlSerializer>();
 
         /// <summary>
         /// Gets the XML serializer for the specified type.
         /// </summary>
         /// <param name="type">The type that will be serialized and deserialized.</param>
         /// <returns>an XML serializer.</returns>
-        protected virtual System.Xml.Serialization.XmlSerializer GetSerializer(Type type)
+        protected virtual XmlSerializer GetSerializer(Type type)
         {
-            System.Xml.Serialization.XmlSerializer serializer;
+            XmlSerializer serializer;
             if (serializerCache.TryGetValue(type, out serializer))
                 return serializer;
 
-            serializer = new System.Xml.Serialization.XmlSerializer(type);
+            serializer = new XmlSerializer(type);
             serializerCache.Add(type, serializer);
             return serializer;
         }

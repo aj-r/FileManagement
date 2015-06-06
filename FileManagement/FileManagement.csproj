@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinarySerializer.cs" />
+    <Compile Include="BinaryFileSerializer.cs" />
     <Compile Include="FileException.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="IFile.cs" />
@@ -51,7 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecentFileCollection.cs" />
     <Compile Include="FileStorage.cs" />
-    <Compile Include="XmlSerializer.cs" />
+    <Compile Include="XmlFileSerializer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,22 +7,22 @@ namespace FileManagement.Json
     /// <summary>
     /// Serializes and deserializes objects in JSON format.
     /// </summary>
-    public class JsonSerializer : ISerializer
+    public class JsonFileSerializer : ISerializer
     {
         private JsonSerializerSettings settings;
 
         /// <summary>
-        /// Creates a new <see cref="JsonSerializer"/> instance.
+        /// Creates a new <see cref="JsonFileSerializer"/> instance.
         /// </summary>
-        public JsonSerializer()
+        public JsonFileSerializer()
             : this(null)
         { }
 
         /// <summary>
-        /// Creates a new <see cref="JsonSerializer"/> instance.
+        /// Creates a new <see cref="JsonFileSerializer"/> instance.
         /// </summary>
         /// <param name="settings">The JSON serialization settings to use.</param>
-        public JsonSerializer(JsonSerializerSettings settings)
+        public JsonFileSerializer(JsonSerializerSettings settings)
         {
             this.settings = settings;
         }
@@ -41,7 +41,7 @@ namespace FileManagement.Json
             using (var writer = new StreamWriter(stream, encoding, 1024, true))
             using (var jsonWriter = new JsonTextWriter(writer))
             {
-                var serializer = Newtonsoft.Json.JsonSerializer.CreateDefault(settings);
+                var serializer = JsonSerializer.CreateDefault(settings);
                 serializer.Serialize(jsonWriter, obj);
             }
         }
@@ -58,7 +58,7 @@ namespace FileManagement.Json
             using (var reader = new StreamReader(stream, encoding, false, 1024, true))
             using (var jsonReader = new JsonTextReader(reader))
             {
-                var serializer = Newtonsoft.Json.JsonSerializer.CreateDefault(settings);
+                var serializer = JsonSerializer.CreateDefault(settings);
                 return serializer.Deserialize<T>(jsonReader);
             }
         }

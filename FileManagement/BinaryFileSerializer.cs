@@ -9,22 +9,22 @@ namespace FileManagement
     /// <summary>
     /// Serializes and deserializes objects as binary data.
     /// </summary>
-    public class BinarySerializer : ISerializer
+    public class BinaryFileSerializer : ISerializer
     {
         private readonly IFormatter serializer;
 
         /// <summary>
-        /// Creates a new <see cref="BinarySerializer"/> instance.
+        /// Creates a new <see cref="BinaryFileSerializer"/> instance.
         /// </summary>
-        public BinarySerializer()
+        public BinaryFileSerializer()
             : this(new BinaryFormatter())
         { }
 
         /// <summary>
-        /// Creates a new <see cref="BinarySerializer"/> instance.
+        /// Creates a new <see cref="BinaryFileSerializer"/> instance.
         /// </summary>
         /// <param name="formatter">The IFormatter implementation to use.</param>
-        public BinarySerializer(IFormatter formatter)
+        public BinaryFileSerializer(IFormatter formatter)
         {
             if (formatter == null)
                 throw new ArgumentNullException("formatter");

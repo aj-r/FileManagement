@@ -67,8 +67,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecentFileListTests.cs" />
     <Compile Include="TestFile.cs" />
-    <Compile Include="JsonSerializerTests.cs" />
-    <Compile Include="XmlSerializerTests.cs" />
+    <Compile Include="JsonFileSerializerTests.cs" />
+    <Compile Include="XmlFileSerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileManagement.Json\FileManagement.Json.csproj">
