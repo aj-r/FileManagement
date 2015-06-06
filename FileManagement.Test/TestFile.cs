@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace FileManagement.Test
 {
@@ -22,6 +19,7 @@ namespace FileManagement.Test
         private string storageLocation;
 
         [XmlIgnore]
+        [JsonIgnore]
         public string StorageLocation
         {
             get { return storageLocation; }

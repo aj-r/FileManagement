@@ -314,6 +314,10 @@ namespace FileManagement
 
 		#region IEnumerable<string> Members
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An enumerator that iterates through a collection.</returns>
 		public IEnumerator<string> GetEnumerator()
 		{
 			return new RecentFileEnumerator(firstNode);

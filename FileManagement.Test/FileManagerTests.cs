@@ -15,7 +15,7 @@ namespace FileManagement.Test
             var gotStream = false;
             var saved = false;
             var mockSerializer = new Mock<ISerializer>();
-            mockSerializer.Setup(s => s.Serialize(It.IsAny<MemoryStream>(), It.IsAny<IFile>())).Callback(() => saved = true);
+            mockSerializer.Setup(s => s.Serialize(It.IsAny<MemoryStream>(), It.IsNotNull<Encoding>(), It.IsAny<IFile>())).Callback(() => saved = true);
             var mockStorage = new Mock<IStorage>();
             mockStorage.Setup(s => s.GetWriteStream("test.txt")).Callback(() => gotStream = true);
             var fm = new FileManager(mockSerializer.Object, mockStorage.Object) { IsHistoryEnabled = false };
@@ -31,7 +31,7 @@ namespace FileManagement.Test
             var gotStream = false;
             var loaded = false;
             var mockSerializer = new Mock<ISerializer>();
-            mockSerializer.Setup(s => s.Deserialize<IFile>(It.IsAny<Stream>())).Callback(() => loaded = true);
+            mockSerializer.Setup(s => s.Deserialize<IFile>(It.IsAny<Stream>(), It.IsNotNull<Encoding>())).Callback(() => loaded = true);
             var mockStorage = new Mock<IStorage>();
             mockStorage.Setup(s => s.GetReadStream("test.txt")).Callback(() => gotStream = true);
             var fm = new FileManager(mockSerializer.Object, mockStorage.Object) { IsHistoryEnabled = false };

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagement", "FileManag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagement.Test", "FileManagement.Test\FileManagement.Test.csproj", "{90357DAA-39D8-4FA3-ABD1-B838642F75DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileManagement.Json", "FileManagement.Json\FileManagement.Json.csproj", "{2BB47B78-ACAB-4B72-A0FF-E1433AA18087}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{90357DAA-39D8-4FA3-ABD1-B838642F75DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90357DAA-39D8-4FA3-ABD1-B838642F75DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90357DAA-39D8-4FA3-ABD1-B838642F75DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BB47B78-ACAB-4B72-A0FF-E1433AA18087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB47B78-ACAB-4B72-A0FF-E1433AA18087}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB47B78-ACAB-4B72-A0FF-E1433AA18087}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB47B78-ACAB-4B72-A0FF-E1433AA18087}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

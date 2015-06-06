@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FileManagement.Test</RootNamespace>
     <AssemblyName>FileManagement.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -39,6 +39,10 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -63,9 +67,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecentFileListTests.cs" />
     <Compile Include="TestFile.cs" />
+    <Compile Include="JsonSerializerTests.cs" />
     <Compile Include="XmlSerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FileManagement.Json\FileManagement.Json.csproj">
+      <Project>{2bb47b78-acab-4b72-a0ff-e1433aa18087}</Project>
+      <Name>FileManagement.Json</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FileManagement\FileManagement.csproj">
       <Project>{96a2b8e9-bdc9-452a-a03a-d1a2f1f2606b}</Project>
       <Name>FileManagement</Name>

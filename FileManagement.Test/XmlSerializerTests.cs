@@ -16,7 +16,7 @@ namespace FileManagement.Test
                 var serializer = new XmlSerializer();
                 var file = new TestFile { TestProperty = "test" };
 
-                serializer.Serialize(ms, file);
+                serializer.Serialize(ms, Encoding.UTF8, file);
 
                 var s = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
                 Assert.That(s, Is.EqualTo(
@@ -40,7 +40,13 @@ namespace FileManagement.Test
             var serializer = new XmlSerializer();
 
             using (var ms = new MemoryStream(buffer))
-                testFile = serializer.Deserialize<TestFile>(ms);
+            {
+                testFile = serializer.Deserialize<TestFile>(ms, Encoding.UTF8);
+                // Make sure the stream is still open.
+                // The caller probably is not expecting us to close the stream, especially if this is a network stream or something.
+                // It is the caller's responsibility to close the stream.
+                Assert.That(ms.CanRead);
+            }
 
             Assert.That(testFile, Is.Not.Null);
             Assert.That(testFile.TestProperty, Is.EqualTo("test"));
