@@ -41,7 +41,7 @@ namespace FileManagement.Json
             using (var writer = new StreamWriter(stream, encoding, 1024, true))
             using (var jsonWriter = new JsonTextWriter(writer))
             {
-                var serializer = new Newtonsoft.Json.JsonSerializer();
+                var serializer = Newtonsoft.Json.JsonSerializer.CreateDefault(settings);
                 serializer.Serialize(jsonWriter, obj);
             }
         }
@@ -58,7 +58,7 @@ namespace FileManagement.Json
             using (var reader = new StreamReader(stream, encoding, false, 1024, true))
             using (var jsonReader = new JsonTextReader(reader))
             {
-                var serializer = new Newtonsoft.Json.JsonSerializer();
+                var serializer = Newtonsoft.Json.JsonSerializer.CreateDefault(settings);
                 return serializer.Deserialize<T>(jsonReader);
             }
         }
