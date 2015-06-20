@@ -26,12 +26,26 @@ namespace FileManagement
         /// <param name="serializer">The object to use to serialize and deserialize objects.</param>
         /// <param name="storage">The <see cref="IStorage"/> implementation to use.</param>
         public FileManager(ISerializer serializer, IStorage storage)
+            : this(serializer, storage, FileManagerSettings.Default())
+        { }
+
+        /// <summary>
+        /// Creates a new <see cref="FileManager"/> instance.
+        /// </summary>
+        /// <param name="serializer">The object to use to serialize and deserialize objects.</param>
+        /// <param name="storage">The <see cref="IStorage"/> implementation to use.</param>
+        /// <param name="settings">The settings to apply to the FileManager.</param>
+        public FileManager(ISerializer serializer, IStorage storage, FileManagerSettings settings)
         {
+            if (serializer == null)
+                throw new ArgumentNullException("serializer");
+            if (storage == null)
+                throw new ArgumentNullException("storage");
+            if (settings == null)
+                throw new ArgumentNullException("settings");
             Storage = storage;
             Serializer = serializer;
-            IsHistoryEnabled = true;
-            RecentFilesStoragePath = "recent.txt";
-            Encoding = Encoding.UTF8;
+            Settings = settings;
         }
 
         /// <summary>
@@ -45,22 +59,9 @@ namespace FileManagement
         protected ISerializer Serializer { get; private set; }
 
         /// <summary>
-        /// Gets or sets the encoding to use for serialization. The default is UTF-8.
+        /// Gets the settings for the current <see cref="FileManager"/>.
         /// </summary>
-        public Encoding Encoding { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether recent document history is enabled.
-        /// </summary>
-        /// <remarks>
-        /// This property is true by default.
-        /// </remarks>
-        public bool IsHistoryEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path to the file that contains the recent file history.
-        /// </summary>
-        public string RecentFilesStoragePath { get; set; }
+        protected FileManagerSettings Settings { get; private set; }
 
 		/// <summary>
 		/// Saves the list of recently opened files.
@@ -71,7 +72,7 @@ namespace FileManagement
         {
             try
             {
-                using (var stream = Storage.GetWriteStream(RecentFilesStoragePath))
+                using (var stream = Storage.GetWriteStream(Settings.RecentFilesStoragePath))
                 {
                     if (stream == null)
                         return;
@@ -85,15 +86,15 @@ namespace FileManagement
             }
             catch (FileNotFoundException ex)
             {
-                throw new FileException(FileExceptionType.NotFound, true, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.NotFound, true, Settings.RecentFilesStoragePath, ex);
             }
             catch (DirectoryNotFoundException ex)
             {
-                throw new FileException(FileExceptionType.NotFound, true, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.NotFound, true, Settings.RecentFilesStoragePath, ex);
             }
             catch (IOException ex)
             {
-                throw new FileException(FileExceptionType.InsufficientPermissions, true, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.InsufficientPermissions, true, Settings.RecentFilesStoragePath, ex);
             }
         }
 
@@ -106,7 +107,7 @@ namespace FileManagement
             var files = new RecentFileCollection();
             try
             {
-                using (var stream = Storage.GetReadStream(RecentFilesStoragePath))
+                using (var stream = Storage.GetReadStream(Settings.RecentFilesStoragePath))
                 {
                     if (stream == null)
                         return files;
@@ -117,15 +118,15 @@ namespace FileManagement
             }
             catch (FileNotFoundException ex)
             {
-                throw new FileException(FileExceptionType.NotFound, false, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.NotFound, false, Settings.RecentFilesStoragePath, ex);
             }
             catch (DirectoryNotFoundException ex)
             {
-                throw new FileException(FileExceptionType.NotFound, false, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.NotFound, false, Settings.RecentFilesStoragePath, ex);
             }
             catch (IOException ex)
             {
-                throw new FileException(FileExceptionType.InsufficientPermissions, false, RecentFilesStoragePath, ex);
+                throw new FileException(FileExceptionType.InsufficientPermissions, false, Settings.RecentFilesStoragePath, ex);
             }
 
             return files;
@@ -166,7 +167,7 @@ namespace FileManagement
                 {
                     try
                     {
-                        Serializer.Serialize(stream, Encoding, obj);
+                        Serializer.Serialize(stream, Settings.Encoding, obj);
                     }
                     catch (Exception ex)
                     {
@@ -187,7 +188,7 @@ namespace FileManagement
                 throw new FileException(FileExceptionType.InsufficientPermissions, true, obj.StorageLocation, ex);
             }
 
-            if (IsHistoryEnabled)
+            if (Settings.IsHistoryEnabled)
             {
                 var list = GetRecentFiles();
                 list.Add(obj.StorageLocation);
@@ -225,7 +226,7 @@ namespace FileManagement
                 {
                     try
                     {
-                        obj = Serializer.Deserialize<T>(stream, Encoding);
+                        obj = Serializer.Deserialize<T>(stream, Settings.Encoding);
                     }
                     catch (Exception ex)
                     {
@@ -251,7 +252,7 @@ namespace FileManagement
                 obj.StorageLocation = filePath;
             }
 
-            if (IsHistoryEnabled)
+            if (Settings.IsHistoryEnabled)
             {
                 var list = GetRecentFiles();
                 list.Add(filePath);

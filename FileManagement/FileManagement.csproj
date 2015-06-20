@@ -45,6 +45,7 @@
     <Compile Include="FileManager.cs" />
     <Compile Include="IFile.cs" />
     <Compile Include="IFileManager.cs" />
+    <Compile Include="FileManagerSettings.cs" />
     <Compile Include="IRecentFileCollection.cs" />
     <Compile Include="ISerializer.cs" />
     <Compile Include="IStorage.cs" />
