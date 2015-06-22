@@ -84,14 +84,6 @@ namespace FileManagement
                     }
                 }
             }
-            catch (FileNotFoundException ex)
-            {
-                throw new FileException(FileExceptionType.NotFound, true, Settings.RecentFilesStoragePath, ex);
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                throw new FileException(FileExceptionType.NotFound, true, Settings.RecentFilesStoragePath, ex);
-            }
             catch (IOException ex)
             {
                 throw new FileException(FileExceptionType.InsufficientPermissions, true, Settings.RecentFilesStoragePath, ex);
@@ -116,13 +108,13 @@ namespace FileManagement
                             files.Add(reader.ReadLine());
                 }
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
-                throw new FileException(FileExceptionType.NotFound, false, Settings.RecentFilesStoragePath, ex);
+                return files;
             }
-            catch (DirectoryNotFoundException ex)
+            catch (DirectoryNotFoundException)
             {
-                throw new FileException(FileExceptionType.NotFound, false, Settings.RecentFilesStoragePath, ex);
+                return files;
             }
             catch (IOException ex)
             {
