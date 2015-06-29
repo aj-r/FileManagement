@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FileManagement.Json")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("File Management - Json")]
+[assembly: AssemblyDescription("An extension for the FileManagement package that conatins a JSON.NET serializer.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FileManagement.Json")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("AJ Richardson")]
+[assembly: AssemblyProduct("File Management")]
+[assembly: AssemblyCopyright("Copyright © AJ Richardson 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
