@@ -26,7 +26,7 @@ namespace FileManagement
         /// <param name="serializer">The object to use to serialize and deserialize objects.</param>
         /// <param name="storage">The <see cref="IStorage"/> implementation to use.</param>
         public FileManager(ISerializer serializer, IStorage storage)
-            : this(serializer, storage, FileManagerSettings.Default())
+            : this(serializer, storage, FileManagerSettings.Default != null ? FileManagerSettings.Default() : new FileManagerSettings())
         { }
 
         /// <summary>
